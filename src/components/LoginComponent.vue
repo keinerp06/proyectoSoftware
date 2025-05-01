@@ -1,7 +1,6 @@
 <template>
   <div class="todo">
-    <title>Login</title>
-    <video class="Banner" autoplay loop>
+    <video class="Banner" autoplay loop muted>
       <source src="../assets/bar.mp4" type="video/mp4" />
     </video>
     <div class="login-wrapper">
@@ -15,29 +14,23 @@
         <div class="form-content">
           <p class="instructions">Inicia Sesion</p>
 
-          <div class="input-field">
-            <input
-              type="email"
-              id="email"
-              name="email"
-              v-model="user"
-              placeholder="Usuario"
-            />
+          <!-- From Uiverse.io by Satwinder04 -->
+          <div class="input-container">
+            <input type="text" id="input" required=""  v-model="user"/>
+            <label for="input" class="label">Usuario</label>
+            <div class="underline"></div>
           </div>
-
-          <div class="input-field">
-            <input
-              type="password"
-              id="password"
-              name="password"
-              v-model="contra"
-              placeholder="Contraseña"
-            />
-
-            <button type="button" id="togglePassword" class="toggle-password">
+          <!-- From Uiverse.io by Satwinder04 -->
+          <div class="input-container">
+            <input type="password" id="password" required="" v-model="contra" />
+            <label for="input" class="label">Contraseña</label>
+           
+            <div class="underline"></div>
+           
+          </div>
+          <button type="button" id="togglePassword" class="toggle-password">
               <i class="pi pi-eye-slash"></i>
             </button>
-          </div>
 
           <hr class="separator" />
           <span>
@@ -105,7 +98,6 @@ document.addEventListener("DOMContentLoaded", function () {
   z-index: -1;
 }
 body {
-  font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
   height: 100vh;
@@ -116,13 +108,81 @@ body {
   background-size: cover;
   background-position: center;
 }
+/* From Uiverse.io by Satwinder04 */
+.input-container {
+  position: relative;
+  margin: 50px auto;
+  width: 450px;
+}
+
+.input-container input[type="text"] {
+  font-size: 20px;
+  width: 100%;
+  border: none;
+  border-bottom: 2px solid #ccc;
+  padding: 5px 0;
+  background-color: transparent;
+  outline: none;
+}
+.input-container input[type="password"] {
+  font-size: 20px;
+  width: 100%;
+  border: none;
+  border-bottom: 2px solid #ccc;
+  padding: 5px 0;
+  background-color: transparent;
+  outline: none;
+}
+
+.input-container .label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: #ccc;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.input-container input[type="text"]:focus ~ .label,
+.input-container input[type="text"]:valid ~ .label {
+  top: -20px;
+  font-size: 16px;
+  color: #333;
+}
+
+.input-container input[type="password"]:focus ~ .label,
+.input-container input[type="password"]:valid ~ .label {
+  top: -20px;
+  font-size: 16px;
+  color: #333;
+}
+
+.input-container .underline {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  background-color: #e7d384;
+  transform: scaleX(0);
+  transition: all 0.3s ease;
+}
+
+.input-container input[type="password"]:focus ~ .underline,
+.input-container input[type="password"]:valid ~ .underline {
+  transform: scaleX(1);
+}
+.input-container input[type="text"]:focus ~ .underline,
+.input-container input[type="text"]:valid ~ .underline {
+  transform: scaleX(1);
+}
 
 .login-wrapper {
   position: relative;
   width: 30rem;
-  bottom: 48rem;
-  left: 35rem;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+  bottom: 55rem;
+  left: 40rem;
+  box-shadow: 0 0 10px rgba(246, 246, 110, 0.1);
 }
 
 /* Estilo del contenedor del nombre del bar */
@@ -149,6 +209,7 @@ body {
 /* Estilo del contenedor del formulario */
 .login-container {
   position: relative;
+
   z-index: 1;
 
   background-color: beige;
@@ -166,28 +227,7 @@ body {
   margin-bottom: 30px;
 }
 
-/* Campos de entrada */
-.input-field {
-  margin-bottom: 25px;
-}
 
-.input-field label {
-  display: block;
-  color: white;
-  text-align: center;
-  margin-bottom: 10px;
-}
-
-.input-field input {
-  width: 100%;
-  padding: 10px 0;
-  border: none;
-  border-bottom: 1px solid #e7d384;
-  text-align: center;
-  outline: none;
-  font-size: 16px;
-  background-color: beige;
-}
 
 /* Separador */
 .separator {
@@ -197,25 +237,14 @@ body {
   margin: 25px 0;
 }
 
-.pi-eye {
-  display: flex;
-  width: 20px;
-  height: 20px;
-  position: relative;
-  bottom: 1rem;
-  left: 26rem;
 
-  cursor: pointer;
-  opacity: 0.6;
-}
 .toggle-password {
   position: relative;
-  bottom: 1.5rem;
-  left: 13rem;
-  background: none;
+  bottom: 5rem;
+  left: 26rem;
   border: none;
   cursor: pointer;
-  z-index: 2;
+ 
 }
 
 /* Botón de ingreso */
@@ -227,6 +256,7 @@ body {
   border-radius: 10px;
   border: 1px solid #555;
   position: relative;
+  left: 8.5rem;
   overflow: hidden;
   transition: all 0.5s ease-in;
   z-index: 1;

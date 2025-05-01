@@ -8,7 +8,7 @@
     </div>
 
     <div class="dashboard-grid">
-      <a href="#ventas" class="dashboard-card">
+      <a href="/Venta" class="dashboard-card">
         <div class="card-pattern"></div>
         <div class="card-overlay"></div>
         <div class="card-content">

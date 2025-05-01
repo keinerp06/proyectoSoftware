@@ -11,8 +11,18 @@ import Aura from '@primeuix/themes/aura';
 
 import 'primeicons/primeicons.css'
 
+import Button from 'primevue/button';
+import Panel from 'primevue/panel';
+
+
+
+//usar componentes
+
+
 const app = createApp(App).use(router);
 app.use(VueAxios, axios);
+app.component('PanelD', Panel);
+app.component('ButtonUno', Button);
 
 app.mount('#app')
 app.use(PrimeVue, {
