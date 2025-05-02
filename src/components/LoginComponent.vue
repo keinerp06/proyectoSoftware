@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
 }
 .Banner {
   position: relative;
-  width: 100%;
+  width: 140rem;
   top: 0;
   left: 0;
   height: 80%;
@@ -180,8 +180,8 @@ body {
 .login-wrapper {
   position: relative;
   width: 30rem;
-  bottom: 55rem;
-  left: 40rem;
+  bottom: 60rem;
+  left: 50rem;
   box-shadow: 0 0 10px rgba(246, 246, 110, 0.1);
 }
 

@@ -12,8 +12,12 @@
 
 }
 * {
+ 
   margin: 0;
   padding: 0;
+}
+body{
+  background-color: #e5e5e5;
 }
 
 nav a.router-link-exact-active {

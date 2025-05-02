@@ -13,25 +13,25 @@
         <div class="card-overlay"></div>
         <div class="card-content">
           <div class="card-icon icon-sales"></div>
-          <h2 class="card-title">VENTANA VENTAS</h2>
+          <h2 class="card-title"> Registro de ventas</h2>
         </div>
       </a>
 
-      <a href="#crear" class="dashboard-card">
+      <a href="/Agregar" class="dashboard-card">
         <div class="card-pattern"></div>
         <div class="card-overlay"></div>
         <div class="card-content">
           <div class="card-icon icon-create"></div>
-          <h2 class="card-title">VENTANA CREAR O ELIMINAR</h2>
+          <h2 class="card-title">Agregar producto</h2>
         </div>
       </a>
 
-      <a href="#inventario" class="dashboard-card">
+      <a href="/Inventario" class="dashboard-card">
         <div class="card-pattern"></div>
         <div class="card-overlay"></div>
         <div class="card-content">
           <div class="card-icon icon-inventory"></div>
-          <h2 class="card-title">VENTANA INVENTARIO</h2>
+          <h2 class="card-title">Inventario</h2>
         </div>
       </a>
 
@@ -40,7 +40,7 @@
         <div class="card-overlay"></div>
         <div class="card-content">
           <div class="card-icon icon-home"></div>
-          <h2 class="card-title">VENTANA INICIAL</h2>
+          <h2 class="card-title">Inicial</h2>
         </div>
       </a>
     </div>

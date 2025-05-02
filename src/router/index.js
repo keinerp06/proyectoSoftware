@@ -3,6 +3,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '@/views/LoginView.vue'
 import AdmministrativoView from '@/views/AdmministrativoView.vue'
 import VentaView from '@/views/VentaView.vue'
+import AgregarView from '@/views/AgregarView.vue'
+import InventarioView from '@/views/InventarioView.vue'
 
 const routes = [
 
@@ -20,6 +22,16 @@ const routes = [
     path: '/Venta',
     name: 'venta',
     component: VentaView
+  },
+  {
+    path: '/Agregar',
+    name: 'agregar',
+    component: AgregarView
+  },
+  {
+    path: '/Inventario',
+    name: 'inventario',
+    component: InventarioView
   },
 
 

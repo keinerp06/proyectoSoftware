@@ -1,146 +1,238 @@
 <template>
   <div class="container">
-    <div class="regresar">
-      <ButtonUno icon="pi pi-arrow-left" iconPos="top" severity="contrast"  style="width: 6rem; height: 3rem;"  @click="regresar()"/>
-    </div>
-    <div class="search-bar">
-      <div class="search-input">
-        <ButtonUno icon="pi pi-search" iconPos="top" severity="contrast"  />
-        <input type="text" placeholder="Search" />
+    <h1>Resumen de ventas</h1>
+
+    <div class="calendar-container">
+      <div class="calendar">
+        <div class="calendar-header">
+          <div class="calendar-nav">
+            <button class="nav-btn">&#10094;</button>
+            <div class="month-year">JUNIO 2023</div>
+       
+            <button class="nav-btn">&#10095;</button>
+          </div>
+        </div>
+
+        <div class="weekdays">
+          <div class="weekday">dom.</div>
+          <div class="weekday">lun.</div>
+          <div class="weekday">mar.</div>
+          <div class="weekday">mié.</div>
+          <div class="weekday">jue.</div>
+          <div class="weekday">vie.</div>
+          <div class="weekday">sáb.</div>
+        </div>
+
+        <div class="days">
+          <div class="day other-month">28</div>
+          <div class="day other-month">29</div>
+          <div class="day other-month">30</div>
+          <div class="day other-month">31</div>
+          <div class="day">1</div>
+          <div class="day">2</div>
+          <div class="day">3</div>
+
+          <div class="day">4</div>
+          <div class="day">5</div>
+          <div class="day">6</div>
+          <div class="day">7</div>
+          <div class="day">8</div>
+          <div class="day">9</div>
+          <div class="day">10</div>
+
+          <div class="day">11</div>
+          <div class="day">12</div>
+          <div class="day">13</div>
+          <div class="day">14</div>
+          <div class="day">15</div>
+          <div class="day selected">16</div>
+          <div class="day">17</div>
+
+          <div class="day">18</div>
+          <div class="day">19</div>
+          <div class="day">20</div>
+          <div class="day">21</div>
+          <div class="day">22</div>
+          <div class="day">23</div>
+          <div class="day">24</div>
+
+          <div class="day">25</div>
+          <div class="day">26</div>
+          <div class="day">27</div>
+          <div class="day">28</div>
+          <div class="day">29</div>
+          <div class="day">30</div>
+          <div class="day other-month">1</div>
+
+          <div class="day other-month">2</div>
+          <div class="day other-month">3</div>
+          <div class="day other-month">4</div>
+          <div class="day other-month">5</div>
+          <div class="day other-month">6</div>
+          <div class="day other-month">7</div>
+          <div class="day other-month">8</div>
+        </div>
       </div>
     </div>
 
-    <div class="boxes-container">
-      <div class="box">
-        <PanelD class="PanelD" v-for="item in items" :key="item">
-          <p class="raya">{{ item.mensaje }}</p>
-        </PanelD>
-        <div class="box-label">productos</div>
-      </div>
-
-      <div class="box">
-        <PanelD class="PanelDos">
-          <p>sdsa</p>
-        </PanelD>
-        <div class="box-label">Graficas ventas general</div>
-      </div>
+    <div class="date-selector">
+      <h2>Seleccione una fecha</h2>
+      <!-- Aquí podrían ir más controles o información del resumen de ventas -->
     </div>
   </div>
 </template>
 
 <script>
-export default {
-  name: "VenticaComponent",
-  data() {
-    return {
-      items: [
-        { mensaje: "olaa" },
-        { mensaje: "Este es el panel 2" },
-        { mensaje: "Este es el panel 3" },
-        { mensaje: "Este es el panel 3" },
-        { mensaje: "Este es el panel 3" },
-      ],
-    };
-  },
-  methods: {
-    regresar: function() {
-      this.$router.push({ name: "Admin" });
-    },
-    addItem() {
-      this.items.push({
-        mensaje: `Este es el panel ${this.items.length + 1}`,
-      });
-    },
-  },
-};
+export default {};
+// Añadir interactividad básica
+document.querySelectorAll(".day").forEach((day) => {
+  day.addEventListener("click", () => {
+    // Quitar selección anterior
+    document.querySelectorAll(".day.selected").forEach((selectedDay) => {
+      selectedDay.classList.remove("selected");
+    });
+
+    // Añadir nueva selección
+    day.classList.add("selected");
+  });
+});
 </script>
 
-
 <style scoped>
-.regresar{
-  position: relative;
-  top: 4rem;
-  left: 7rem;
-
-}
-body {
+* {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
   font-family: Arial, sans-serif;
-
-  background-color: #af0707;
 }
 
-.PanelD {
-  margin-top: 10px;
-  height: 80px;
-  border-radius: 8px 8px 15px 15px;
-  box-shadow: 0px 0px 10px 0 rgba(97, 92, 92, 0.7);
-}
-.PanelDos {
-  margin-top: 10px;
-  height: 85%;
-
-  border-radius: 8px 8px 15px 15px;
-  box-shadow: 0px 0px 10px 0 rgba(97, 92, 92, 0.7);
+body {
+  background-color: #f5f5f5;
+  padding: 20px;
 }
 
 .container {
-  position: relative;
-  right: 15rem;
-  max-width: 1300px;
+  display: flex;
+  justify-content: space-between;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 10px;
+  flex-wrap: wrap;
 }
 
-.search-bar {
-  padding: 10px;
-  background-color: #ffffff;
-  border-bottom: 1px solid #ececec;
+h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+  width: 100%;
+}
+
+.calendar-container {
+  background-color: #e6e6e6;
+  padding: 20px;
+  border-radius: 5px;
+  width: 45%;
+  min-width: 300px;
+}
+
+.date-selector {
+  width: 45%;
+  min-width: 300px;
+}
+
+.date-selector h2 {
+  font-size: 20px;
   margin-bottom: 20px;
 }
 
-.search-input {
-  display: flex;
-  position: relative;
-  width: 800px;
-  left: 26rem;
-  align-items: center;
-  padding: 8px 12px;
-  box-shadow: 0px 0px 10px 0 rgba(97, 92, 92, 0.7);
-}
-
-input {
-  border: none;
-  outline: none;
-  font-size: 16px;
-  width: 100%;
-}
-
-.boxes-container {
-  display: flex;
-  position: relative;
-  left: 14rem;
-  gap: 50px;
-}
-
-.box {
-  position: relative;
+.calendar {
   background-color: white;
-  width: 900rem;
-  border-radius: 20px;
-  box-shadow: 5px 5px 5px 5px rgba(0, 0, 0, 0.5);
-  height: 900px;
+  border-radius: 5px;
+  padding: 15px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.box-label {
-  position: absolute;
-  bottom: 15px;
-  width: 100%;
-  text-align: center;
-  font-size: 16px;
-  font-family: "Times New Roman", Times, serif;
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.calendar-nav {
+  display: flex;
+  align-items: center;
+}
+
+.nav-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 0 10px;
+  color: #666;
+}
+
+.month-year {
+  margin: 0 15px;
   font-weight: bold;
-  color: #333;
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-weight: bold;
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.weekday {
+  padding: 5px;
+}
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.day {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 35px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.day:hover {
+  background-color: #f0f0f0;
+}
+
+.day.other-month {
+  color: #ccc;
+}
+
+.day.selected {
+  background-color: #007bff;
+  color: white;
+}
+
+.day.today {
+  border: 1px solid #007bff;
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .calendar-container,
+  .date-selector {
+    width: 100%;
+    margin-bottom: 20px;
+  }
 }
 </style>
