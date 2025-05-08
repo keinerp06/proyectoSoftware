@@ -5,6 +5,7 @@ import AdmministrativoView from '@/views/AdmministrativoView.vue'
 import VentaView from '@/views/VentaView.vue'
 import AgregarView from '@/views/AgregarView.vue'
 import InventarioView from '@/views/InventarioView.vue'
+import InicialView from '@/views/InicialView.vue'
 
 const routes = [
 
@@ -32,6 +33,11 @@ const routes = [
     path: '/Inventario',
     name: 'inventario',
     component: InventarioView
+  },
+  {
+    path: '/Inicial',
+    name: 'inicial',
+    component: InicialView
   },
 
 

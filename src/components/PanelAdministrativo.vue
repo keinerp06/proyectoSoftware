@@ -35,7 +35,7 @@
         </div>
       </a>
 
-      <a href="#inicio" class="dashboard-card">
+      <a href="/Inicial" class="dashboard-card">
         <div class="card-pattern"></div>
         <div class="card-overlay"></div>
         <div class="card-content">

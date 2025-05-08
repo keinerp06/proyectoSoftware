@@ -99,7 +99,7 @@
           icon="pi pi-arrow-left"
           iconPos="top"
           severity="contrast"
-          style="width: 3rem; height: 3rem; position: relative;  bottom: 60rem; left: 38.5rem;"
+          style="width: 3rem; height: 3rem; position: relative;  bottom: 59rem; left: 31.5rem;"
           @click="regresar()"
         />
       </div>

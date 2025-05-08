@@ -1,6 +1,7 @@
 <template>
   <div class="header">
     <h1 class="h1">Inventario</h1>
+    <ButtonUno  severity="contrast" style="position: absolute; bottom: 2rem; left: 6rem; font-size: 20px;" @click="regresar()"> Agregar Producto</ButtonUno>
   </div>
 
   <div class="container">
@@ -124,6 +125,10 @@ export default {
     },
     mostrarPokemon(pokemon) {
       this.pokemonSeleccionado = pokemon;
+    },
+  
+    regresar: function() {
+      this.$router.push({ name: "Admin" });
     },
   },
 
