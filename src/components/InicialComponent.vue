@@ -3,114 +3,54 @@
     <div class="search-bar">Search</div>
 
     <div class="categories">
-      <div class="category">Whisky</div>
-      <div class="category">Ron</div>
-      <div class="category">Tequila</div>
-      <div class="category">Cerveza</div>
-      <div class="category">Aguardiente</div>
+      <div class="category" v-for="cat in categories" :key="cat">{{ cat }}</div>
     </div>
 
     <div class="main-content">
       <div class="products-section">
         <div class="products-grid">
-          <div class="product">
-            <div class="product-image">
-              <div>X</div>
-            </div>
+          <div v-for="product in products" :key="product.id" class="product">
+            <div class="product-image"><div>X</div></div>
             <div class="product-info">
               <div class="product-details">
-                <div>nombre</div>
-                <div>info</div>
-                <div>valor</div>
+                <div class="product-name">{{ product.name }}</div>
+                <div class="product-description">{{ product.description }}</div>
+                <div class="product-price">${{ product.price }}</div>
               </div>
-              <button class="buy-button">COMPRAR</button>
+              <button class="buy-button" @click="addToCart(product)">
+                COMPRAR
+              </button>
             </div>
           </div>
-
-          <div class="product">
-            <div class="product-image">
-              <div>X</div>
-            </div>
-            <div class="product-info">
-              <div class="product-details">
-                <div>nombre</div>
-                <div>info</div>
-                <div>valor</div>
-              </div>
-              <button class="buy-button">COMPRAR</button>
-            </div>
-          </div>
-
-          <div class="product">
-            <div class="product-image">
-              <div>X</div>
-            </div>
-            <div class="product-info">
-              <div class="product-details">
-                <div>nombre</div>
-                <div>info</div>
-                <div>valor</div>
-              </div>
-              <button class="buy-button">COMPRAR</button>
-            </div>
-          </div>
-
-          <div class="empty-product"></div>
-          <div class="empty-product"></div>
-          <div class="empty-product"></div>
-          <div class="empty-product"></div>
-          <div class="empty-product"></div>
-          <div class="empty-product"></div>
         </div>
       </div>
 
       <div class="cart">
         <div class="cart-items">
-          <div class="cart-item">
-            <div class="cart-image"></div>
+          <div
+            v-for="item in Object.values(cart.items)"
+            :key="item.id"
+            class="cart-item"
+          >
+            <div class="cart-image">X</div>
             <div class="cart-details">
-              <div>nombre</div>
-              <div>$ valor</div>
+              <div>{{ item.name }}</div>
+              <div>$ {{ item.price }}</div>
             </div>
             <div class="quantity-control">
-              <div class="quantity-button">-</div>
-              <div class="quantity-button">+</div>
-            </div>
-          </div>
-
-          <div class="cart-item">
-            <div class="cart-image"></div>
-            <div class="cart-details">
-              <div>nombre</div>
-              <div>$ valor</div>
-            </div>
-            <div class="quantity-control">
-              <div class="quantity-button">-</div>
-              <div class="quantity-button">+</div>
-            </div>
-          </div>
-
-          <div class="cart-item">
-            <div class="cart-image"></div>
-            <div class="cart-details">
-              <div>nombre</div>
-              <div>$ valor</div>
-            </div>
-            <div class="quantity-control">
-              <div class="quantity-button">-</div>
-              <div class="quantity-button">+</div>
-            </div>
-          </div>
-
-          <div class="cart-item">
-            <div class="cart-image"></div>
-            <div class="cart-details">
-              <div>nombre</div>
-              <div>$ valor</div>
-            </div>
-            <div class="quantity-control">
-              <div class="quantity-button">-</div>
-              <div class="quantity-button">+</div>
+              <div
+                class="quantity-button"
+                @click="changeQuantity(item.id, 'decrease')"
+              >
+                -
+              </div>
+              <div class="quantity">{{ item.quantity }}</div>
+              <div
+                class="quantity-button"
+                @click="changeQuantity(item.id, 'increase')"
+              >
+                +
+              </div>
             </div>
           </div>
         </div>
@@ -118,23 +58,95 @@
         <div class="totals">
           <div class="subtotal">
             <div>SUB TOTAL</div>
-            <div>$ VALOR</div>
+            <div>{{ cart.subtotal }}</div>
           </div>
-
           <div class="total">
             <div>TOTAL</div>
-            <div>$ VALOR</div>
+            <div>{{ cart.total }}</div>
           </div>
         </div>
 
-        <div class="checkout-button">PAGAR</div>
+        <div class="checkout-button" @click="checkout">PAGAR</div>
       </div>
+    </div>
+
+    <div class="notification" v-show="notificationVisible">
+      {{ notification }}
     </div>
   </div>
 </template>
 
-<script>
-export default {};
+<script setup>
+import { reactive, ref } from "vue";
+
+const categories = ["Whisky", "Ron", "Tequila", "Cerveza", "Aguardiente"];
+
+const products = [
+  { id: 1, name: "Whisky Premium", price: 120, description: "12 años" },
+  { id: 2, name: "Ron Añejo", price: 95, description: "7 años" },
+  { id: 3, name: "Tequila Reposado", price: 85, description: "100% Agave" },
+];
+
+const cart = reactive({
+  items: {},
+  subtotal: 0,
+  total: 0,
+});
+
+const notification = ref("");
+const notificationVisible = ref(false);
+
+function showNotification(msg) {
+  notification.value = msg;
+  notificationVisible.value = true;
+  setTimeout(() => (notificationVisible.value = false), 2000);
+}
+
+function addToCart(product) {
+  if (cart.items[product.id]) {
+    cart.items[product.id].quantity++;
+  } else {
+    cart.items[product.id] = {
+      ...product,
+      quantity: 1,
+    };
+  }
+  calculateTotals();
+  showNotification(`${product.name} añadido al carrito`);
+}
+
+function changeQuantity(productId, action) {
+  const item = cart.items[productId];
+  if (action === "increase") {
+    item.quantity++;
+  } else if (action === "decrease") {
+    if (item.quantity > 1) {
+      item.quantity--;
+    } else {
+      delete cart.items[productId];
+    }
+  }
+  calculateTotals();
+}
+
+function calculateTotals() {
+  let subtotal = 0;
+  for (const item of Object.values(cart.items)) {
+    subtotal += item.price * item.quantity;
+  }
+  cart.subtotal = subtotal;
+  cart.total = subtotal; // Aquí puedes sumar impuestos u otros cargos
+}
+
+function checkout() {
+  if (Object.keys(cart.items).length > 0) {
+    alert(`Procesando pago por un total de ${cart.total}`);
+    cart.items = {};
+    calculateTotals();
+  } else {
+    alert("El carrito está vacío");
+  }
+}
 </script>
 
 <style scoped>
@@ -238,6 +250,11 @@ body {
   padding: 20px;
 }
 
+.cart-items {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
 .cart-item {
   display: flex;
   align-items: center;
@@ -249,6 +266,9 @@ body {
   height: 50px;
   background-color: #ddd;
   margin-right: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .cart-details {
@@ -271,6 +291,12 @@ body {
   align-items: center;
   cursor: pointer;
   font-weight: bold;
+}
+
+.quantity {
+  display: inline-block;
+  min-width: 20px;
+  text-align: center;
 }
 
 .totals {
@@ -301,5 +327,17 @@ body {
   display: grid;
   grid-template-columns: 3fr 1fr;
   gap: 20px;
+}
+
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #4caf50;
+  color: white;
+  padding: 15px;
+  border-radius: 5px;
+  display: none;
+  z-index: 1000;
 }
 </style>
