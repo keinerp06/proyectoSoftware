@@ -53,7 +53,7 @@
       </div>
 
       <div class="form-group">
-        <label for="disponibles">Unidades Disponibles</label>
+        <label for="disponibles">Stock</label>
 
         <input
           autocomplete="off"
@@ -66,14 +66,14 @@
         />
       </div>
       <div class="form-group">
-        <label for="categoria">Categoría</label>
+        <label for="categoria">Tipo producto  </label>
         <input
           autocomplete="off"
           id="tipo"
           class="input"
-          type="number"
           v-model="producto.categoria"
-          placeholder="tipo de producto "
+          type="text"
+          placeholder="agregar por numero de tipo "
         />
       </div>
 
@@ -95,30 +95,29 @@
   </div>
   <div class="card">
     <CardPrime>
-  <template #title>Información</template>
-  <template #content>
-    <div
-      class="m-2"
-      style="
-        padding: 10px;
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        width: fit-content;
-      "
-    >
-      <p>Los tipos son:</p>
-      <ol>
-        <li>Whisky</li>
-        <li>Aguardiente</li>
-        <li>Vino</li>
-        <li>Cerveza</li>
-        <li>Ron</li>
-      </ol>
-    </div>
-  </template>
-</CardPrime>
-
+      <template #title>Información para agregar el tipo de producto:</template>
+      <template #content>
+        <div
+          class="m-2"
+          style="
+            padding: 10px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: fit-content;
+          "
+        >
+          <p>Los tipos son:</p>
+          <ol>
+            <li>Whisky</li>
+            <li>Aguardiente</li>
+            <li>Vino</li>
+            <li>Cerveza</li>
+            <li>Ron</li>
+          </ol>
+        </div>
+      </template>
+    </CardPrime>
   </div>
   <div class="regresar">
     <ButtonUno

@@ -1,13 +1,21 @@
 <template>
   <div class="container">
     <div class="categories">
-      <div class="category" v-for="cat in categories" :key="cat">{{ cat }}</div>
+      <div 
+        class="category" 
+        v-for="cat in categories" 
+        :key="cat"
+        :class="{ active: selectedCategory === cat }"
+        @click="filterByCategory(cat)"
+      >
+        {{ cat }}
+      </div>
     </div>
 
     <div class="main-content">
       <div class="products-section">
         <div class="products-grid">
-          <div v-for="product in products" :key="product.id" class="product">
+          <div v-for="product in filteredProducts" :key="product.id" class="product">
             <div class="product-image">
               <img :src="product.imagen" alt="" @click="openModal(product)" />
             </div>
@@ -72,7 +80,15 @@
           </div>
         </div>
 
-        <div class="checkout-button" @click="checkout">PAGAR</div>
+        
+        <ButtonUno
+          class="checkout-button"
+          severity="contrast"
+          label="Pagar "
+          @click="checkout"
+          raised
+        >
+        </ButtonUno>
       </div>
     </div>
 
@@ -94,11 +110,24 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onMounted, computed } from "vue";
 import axios from "axios";
 
-const categories = ["Whisky", "Ron", "Tequila", "Cerveza", "Aguardiente"];
+const categories = ["All", "wiskhy", "Aguardiente", "Vino", "Cerveza", "Ron"];
 const products = ref([]);
+const selectedCategory = ref(null);
+
+// Productos filtrados por categoría
+const filteredProducts = computed(() => {
+  if (!selectedCategory.value || selectedCategory.value === "All") return products.value;
+  return products.value.filter(product => product.tipo.nombre.toLowerCase() === selectedCategory.value.toLowerCase());
+});
+
+// Función para filtrar por categoría
+const filterByCategory = (category) => {
+  selectedCategory.value = selectedCategory.value === category ? null : category;
+};
+
 const loading = ref(false);
 const error = ref(null);
 
@@ -128,7 +157,7 @@ const addToCart = async (product) => {
     const currentProduct = response.data;
 
     if (currentProduct.stock <= 0) {
-      showNotification("Producto sin stock disponible");
+      alert("Producto sin stock disponible");
       return;
     }
 
@@ -136,7 +165,7 @@ const addToCart = async (product) => {
       if (cart.items[product.id].quantity < currentProduct.stock) {
         cart.items[product.id].quantity++;
       } else {
-        showNotification("Stock máximo alcanzado");
+        alert("Stock máximo alcanzado");
         return;
       }
     } else {
@@ -201,20 +230,21 @@ const checkout = async () => {
   }
 
   try {
+  
     // Actualizar el stock de cada producto
     for (const item of Object.values(cart.items)) {
       await axios.put(`http://localhost:3000/producto/${item.id}`, {
-        stock: item.stock - item.quantity,
+        stock: item.stock - item.quantity
       });
     }
 
-    alert(`Procesando pago por un total de $${cart.total}`);
+    alert(`Venta procesada por un total de $${cart.total}`);
     cart.items = {};
     calculateTotals();
     getAllProductos(); // Actualizar la lista de productos
   } catch (error) {
-    console.error("Error al procesar el checkout:", error);
-    showNotification("Error al procesar el pago");
+    console.error("Error al procesar la venta:", error);
+    showNotification("Error al procesar la venta");
   }
 };
 
@@ -662,25 +692,12 @@ body {
 
 .checkout-button:hover {
   color: white;
-  background: rgb(0, 0, 0);
+  background: black; 
   transform: translateY(-2px);
   box-shadow: var(--shadow-light);
 }
 
-.checkout-button:active {
-  transform: translateY(0);
-}
 
-@keyframes slideIn {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
 
 /* Estados de carga */
 .loading {
