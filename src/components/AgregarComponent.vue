@@ -1,9 +1,7 @@
 <template>
   <div>
- 
     <div class="container">
       <h1>Nuevo Producto</h1>
-   
 
       <div class="form-group">
         <div class="input-group">
@@ -13,35 +11,44 @@
             name="Email"
             id="Email"
             class="input"
+            v-model="producto.nombre"
             type="email"
           />
           <div></div>
         </div>
       </div>
-
-      <div class="form-group">
-        <label for="categoria">Categoría</label>
-        <SelectD
-          v-model="selectedCity1"
-          :options="cities"
-          optionLabel="name"
-          placeholder="Seleccione una categoria"
-          :invalid="!selectedCity1"
-          class="w-full md:w-56"
-          style="width: 45rem"
-        />
-      </div>
-
       <div class="form-group">
         <label for="precio">Precio</label>
-      
+
         <input
           autocomplete="off"
           step="0.01"
           id="precio"
           class="input"
+          v-model="producto.precio"
           type="number"
           placeholder="0.00"
+        />
+      </div>
+      <div class="form-group">
+        <label for="descripcion">Descripción</label>
+        <textarea
+          id="descripcion"
+          class="description"
+          v-model="producto.descripcion"
+          placeholder="Describa el producto..."
+        ></textarea>
+      </div>
+      <div class="form-group">
+        <label for="disponibles">Ingrese la URL de la imagen</label>
+
+        <input
+          autocomplete="off"
+          id="imagen"
+          class="input"
+          v-model="producto.imagen"
+          type="text"
+          placeholder="URL imagen "
         />
       </div>
 
@@ -53,30 +60,21 @@
           min="0"
           id="disponibles"
           class="input"
+          v-model="producto.disponibles"
           type="number"
           placeholder="0"
         />
       </div>
-
       <div class="form-group">
-        <label for="descripcion">Descripción</label>
-        <textarea
-          id="descripcion"
-          class="description"
-          placeholder="Describa el producto..."
-        ></textarea>
-      </div>
-
-      <div class="form-group">
-        <label>Imagen del Producto</label>
-        <div class="upload-btn">
-          <div>
-            Haga clic para seleccionar una imagen o arrastre y suelte aquí
-          </div>
-        </div>
-        <div class="preview">
-          <div class="image-placeholder">Vista previa no disponible</div>
-        </div>
+        <label for="categoria">Categoría</label>
+        <input
+          autocomplete="off"
+          id="tipo"
+          class="input"
+          type="number"
+          v-model="producto.categoria"
+          placeholder="tipo de producto "
+        />
       </div>
 
       <div class="buttons">
@@ -90,46 +88,175 @@
             width: 300px;
             font-weight: bold;
           "
+          @click="guardarProducto()"
         />
       </div>
     </div>
   </div>
+  <div class="card">
+    <CardPrime>
+  <template #title>Información</template>
+  <template #content>
+    <div
+      class="m-2"
+      style="
+        padding: 10px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        width: fit-content;
+      "
+    >
+      <p>Los tipos son:</p>
+      <ol>
+        <li>Whisky</li>
+        <li>Aguardiente</li>
+        <li>Vino</li>
+        <li>Cerveza</li>
+        <li>Ron</li>
+      </ol>
+    </div>
+  </template>
+</CardPrime>
+
+  </div>
   <div class="regresar">
-        <ButtonUno
-          icon="pi pi-arrow-left"
-          iconPos="top"
-          severity="contrast"
-          style="width: 3rem; height: 3rem; position: relative;  bottom: 59rem; left: 31.5rem;"
-          @click="regresar()"
-        />
-      </div>
+    <ButtonUno
+      icon="pi pi-arrow-left"
+      iconPos="top"
+      severity="contrast"
+      style="
+        width: 3rem;
+        height: 3rem;
+        position: relative;
+        bottom: 60em;
+        left: 38.5rem;
+      "
+      @click="regresar()"
+    />
+  </div>
 </template>
 
 <script>
 export default {
   data() {
     return {
-      selectedCity: null,
-      cities: [
-        { name: "Wiskhy", code: "NY" },
-        { name: "Vino", code: "RM" },
-        { name: "Tequila", code: "LDN" },
-        { name: "Ron", code: "IST" },
-        { name: "Vodka", code: "PRS" },
-      ],
-      
+      productos: [],
+      producto: {
+        nombre: "",
+        precio: 0,
+        descripcion: "",
+        imagen: "",
+        disponibles: 0,
+        categoria: 0,
+      },
     };
-    
   },
   methods: {
-    regresar: function() {
+    getAllProductos: async function () {
+      let url = "http://localhost:3000/producto";
+      let vue = this;
+      await this.axios
+        .get(url)
+        .then(function (response) {
+          console.log("ESTOS SON LOS DATOS");
+          console.log(response.data);
+          console.log("STATUS");
+          console.log(response.status);
+          vue.productos = response.data;
+        })
+        .catch(function (error) {
+          console.log(error);
+        })
+        .finally(function () {
+          console.log("Proceso terminado");
+        });
+    },
+    regresar: function () {
       this.$router.push({ name: "Admin" });
     },
-  }
+    async guardarProducto() {
+      if (!this.validar()) return;
+
+      const data = {
+        nombre: this.producto.nombre,
+        costo: parseFloat(this.producto.precio), // Cambiado a costo para coincidir con el backend
+        descripcion: this.producto.descripcion,
+        imagen: this.producto.imagen,
+        stock: parseInt(this.producto.disponibles), // Cambiado a stock para coincidir con el backend
+        id_tipo: parseInt(this.producto.categoria),
+      };
+
+      const url = "http://localhost:3000/producto/agregar";
+
+      try {
+        const response = await this.axios.post(url, data, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.data) {
+          alert("Producto agregado exitosamente");
+          this.$router.push({ name: "Admin" }); // Redirigir después de agregar
+        } else {
+          alert("Error al agregar el producto");
+        }
+      } catch (error) {
+        console.error("Error al guardar el producto:", error);
+        alert(
+          "Error al guardar el producto: " +
+            (error.response?.data || error.message)
+        );
+      } finally {
+        this.producto = {
+          nombre: "",
+          precio: 0,
+          descripcion: "",
+          imagen: "",
+          disponibles: 0,
+          categoria: 0,
+        };
+      }
+    },
+    validar() {
+      if (this.producto.nombre == "") {
+        alert("Por favor digite el nombre del producto");
+        return false;
+      } else if (this.producto.precio == 0) {
+        alert("Por favor digite el precio del producto");
+        return false;
+      } else if (this.producto.descripcion == "") {
+        alert("Por favor digite la descripción del producto");
+        return false;
+      } else if (this.producto.imagen == "") {
+        alert("Por favor digite la imagen del producto");
+        return false;
+      } else if (this.producto.disponibles == 0) {
+        alert("Por favor digite la cantidad de unidades disponibles");
+        return false;
+      } else if (this.producto.categoria == 0) {
+        alert("Por favor digite la categoría del producto");
+        return false;
+      }
+      return true;
+    },
+  },
+  created: function () {
+    this.getAllProductos();
+  },
 };
 </script>
 
 <style scoped>
+.card {
+  width: 400px;
+  height: 100%;
+  position: relative;
+  left: 100rem;
+  bottom: 40rem;
+  background-color: #fff;
+}
 .container {
   max-width: 800px;
   margin: 0 auto;
@@ -138,8 +265,8 @@ export default {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   padding: 30px;
 }
-.regresar{
-position: absolute;
+.regresar {
+  position: absolute;
 }
 h1 {
   color: #2c3e50;

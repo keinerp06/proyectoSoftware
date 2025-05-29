@@ -13,10 +13,10 @@
       <div class="login-container">
         <div class="form-content">
           <p class="instructions">Inicia Sesion</p>
-
+        
           <!-- From Uiverse.io by Satwinder04 -->
           <div class="input-container">
-            <input type="text" id="input" required=""  v-model="user"/>
+            <input type="text" id="nombre" required=""  v-model="user"/>
             <label for="input" class="label">Usuario</label>
             <div class="underline"></div>
           </div>
@@ -45,20 +45,46 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: "LoginComponent",
   data() {
     return {
-      user: "",
-      contra: "",
+     
+    
     };
   },
   methods: {
-    click: function () {
-      if (this.user == "keiner" && this.contra == "1234") {
-        this.$router.push({ name: "Admin" });
-      } else {
-        alert("credenciales incorrectas");
+    click: async function () {
+      try {
+        if (!this.user || !this.contra) {
+          alert("Por favor ingrese usuario y contraseña");
+          return;
+        }
+
+        // Usar axios directamente en lugar de this.axios
+        const response = await axios.post('http://localhost:3000/usuario/login', {
+          nombre: this.user,
+          contrasena: this.contra
+        });
+
+        if (response.data && response.data.usuario) {
+          localStorage.setItem('usuario', JSON.stringify(response.data.usuario));
+         
+          this.$router.push({ name: "Admin" });
+        } else {
+          alert("Usuario o contraseña incorrectos");
+        }
+      } catch (error) {
+        console.error('Error en el login:', error);
+        if (error.response) {
+          alert(error.response.data.mensaje || "Error en las credenciales");
+        } else if (error.request) {
+          alert("Error de conexión con el servidor");
+        } else {
+          alert("Error al intentar iniciar sesión");
+        }
       }
     },
   },
@@ -82,6 +108,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
 </script>
 
 <style scoped>

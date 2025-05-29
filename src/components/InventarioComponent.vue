@@ -1,78 +1,88 @@
 <template>
   <div class="header">
     <h1 class="h1">Inventario</h1>
-    <ButtonUno  severity="contrast" style="position: absolute; bottom: 2rem; left: 6rem; font-size: 20px;" @click="regresar()"> Agregar Producto</ButtonUno>
+    <ButtonUno
+      severity="contrast"
+      style="position: absolute; bottom: 2rem; left: 6rem; font-size: 20px"
+      @click="Agregar()"
+    >
+      Agregar Producto</ButtonUno
+    >
   </div>
 
   <div class="container">
     <!-- First Row -->
-    <div class="card" v-for="pokemon in pokemones" :key="pokemon.id">
+    <div class="card" v-for="produc in productos" :key="produc.id">
       <div class="card-image">
-        <img :src="pokemon.imagen" alt="Whisky" />
+        <img :src="produc.imagen" alt="Whisky" />
       </div>
       <div class="card-content">
-        <div class="card-title">{{ pokemon.nombre }}</div>
-        <div
-          class="card-price"
-          :style="{ 'background-color': pokemon.type_color }"
-        >
-          COP 80.000
-        </div>
-        <div class="card-stock">10 en existencias</div>
+        <div class="card-title">{{ produc.nombre }}</div>
+        <div class="card-price">{{pesoCol(produc.costo)}}</div>
+        <div class="card-stock">{{ produc.stock }} existencias</div>
       </div>
       <div class="card-actions">
         <div class="action-button">
           <ButtonUno
             severity="contrast"
             icon=" pi pi-pen-to-square"
-            @click="AbrirModal"
+            @click="AbrirModal(produc)"
           />
         </div>
         <div class="action-button">
-          <ButtonUno severity="contrast" icon="pi pi-trash" />
+          <ButtonUno
+            severity="contrast"
+            icon="pi pi-trash"
+            @click="eliminarProducto(produc.id)"
+          />
         </div>
       </div>
     </div>
-    <DialogPrime 
-      :visible="abierto"
-      maximizable
-      modal
-      :header="nombre"
-      :style="{ width: '50rem' }"
-      :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
-    >
-      <CardPrime 
-        style="width: 25rem; overflow: initial"
-        v-for="pokemon in pokemones"
-        :key="pokemon.id"
-        :id="pokemon.id"
-        :nombre="pokemon.nombre"
-        :color="pokemon.type_color"
-        :imagen="pokemon.imagen"
-        :tipo="pokemon.type_name"
-        :disponible="pokemon.disponible" 
-        
+  </div>
 
-      >
-        <template #header>
-          <img :src="pokemon.imagen" alt="" />
-        </template>
-        <template #title> {{  pokemonSeleccionado.nombre}}</template>
-        <template #subtitle>{{ tipo }}</template>
-        <template #content>
-          <h2>{{ nombre }}</h2>
-        </template>
-        <template #footer>
-          <div class="flex gap-4 mt-1">
-            <button @click="mostrarPokemon(pokemon)">Ver</button>
-          </div>
-        </template>
-      </CardPrime>
+  <!-- Modal de Edición -->
+  <div class="modal" v-if="abierto">
+    <div class="modal-content">
+      <h2>Editar Producto</h2>
+      <div class="form-group">
+        <label>Nombre:</label>
+        <input v-model="productoEditando.nombre" type="text" class="input" />
+      </div>
+      <div class="form-group">
+        <label>Precio:</label>
+        <input
+          v-model="productoEditando.costo"
+          type="number"
+          step="0.01"
+          class="input"
+        />
+      </div>
+      <div class="form-group">
+        <label>Descripción:</label>
+        <input
+          v-model="productoEditando.descripcion"
+          type="text"
+          class="input"
+        />
+      </div>
+      <div class="form-group">
+        <label>Imagen URL:</label>
+        <input v-model="productoEditando.imagen" type="text" class="input" />
+      </div>
+      <div class="form-group">
+        <label>Stock:</label>
+        <input v-model="productoEditando.stock" type="number" class="input" />
+      </div>
 
-      <ButtonUno @click="CerrarModal" class="boton-modal" severity="contrast"
-        >Cerrar</ButtonUno
-      >
-    </DialogPrime>
+      <div class="modal-buttons">
+        <ButtonUno
+          @click="guardarCambios"
+          severity="contrast"
+          label="Guardar"
+        />
+        <ButtonUno @click="CerrarModal" severity="contrast" label="Cancelar" />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -82,16 +92,23 @@ export default {
 
   data() {
     return {
-      pokemones: [],
+      productos: [],
       abierto: false,
-      pokemonSeleccionado: null,
+      productoEditando: {
+        id: null,
+        nombre: "",
+        costo: 0,
+        descripcion: "",
+        imagen: "",
+        stock: 0,
+        id_tipo: 1,
+      },
     };
   },
 
   methods: {
-    getAllPokemones: async function () {
-      let url =
-        "https://cobuses.com.co/APIV2/model/pokemon.php?dato=getallpokemon";
+    getAllProductos: async function () {
+      let url = "http://localhost:3000/producto";
       let vue = this;
       await this.axios
         .get(url)
@@ -100,7 +117,7 @@ export default {
           console.log(response.data);
           console.log("STATUS");
           console.log(response.status);
-          vue.pokemones = response.data;
+          vue.productos = response.data;
         })
         .catch(function (error) {
           console.log(error);
@@ -109,31 +126,80 @@ export default {
           console.log("Proceso terminado");
         });
     },
-    AbrirModal: function () {
+    pesoCol: function (number) {
+      return new Intl.NumberFormat("es-CO", {
+        style: "currency",
+        currency: "COL",
+        minimumFractionDigits: 0,
+      }).format(number);
+    }, 
+
+    Agregar: function () {
+      this.$router.push({ name: "agregar" });
+    },
+    AbrirModal: function (producto) {
+      this.productoEditando = { ...producto };
       this.abierto = true;
     },
+
     CerrarModal: function () {
       this.abierto = false;
+      this.productoEditando = {
+        id: null,
+        nombre: "",
+        costo: 0,
+        descripcion: "",
+        imagen: "",
+        stock: 0,
+        id_tipo: 1,
+      };
     },
-    props: {
-      id: Number,
-      imagen: String,
-      nombre: String,
-      tipo: String,
-      color: String,
-      disponible: Number,
+    async guardarCambios() {
+      try {
+        const response = await this.axios.put(
+          `http://localhost:3000/producto/${this.productoEditando.id}`,
+          this.productoEditando
+        );
+
+        if (response.status === 200) {
+          alert("Producto actualizado correctamente");
+          this.CerrarModal();
+          await this.getAllProductos();
+        }
+      } catch (error) {
+        console.error("Error al actualizar el producto:", error);
+        alert(
+          "Error al actualizar el producto: " +
+            (error.response?.data || error.message)
+        );
+      }
     },
-    mostrarPokemon(pokemon) {
-      this.pokemonSeleccionado = pokemon;
-    },
-  
-    regresar: function() {
-      this.$router.push({ name: "Admin" });
+
+    eliminarProducto: async function (id) {
+      if (confirm("¿Está seguro de que desea eliminar este producto?")) {
+        try {
+          const response = await this.axios.delete(
+            `http://localhost:3000/producto/eliminar/${id}`
+          );
+          if (response.status === 200) {
+            alert("Producto eliminado correctamente");
+            // Actualizar la lista de productos
+            await this.getAllProductos();
+          } else {
+            alert("Error al eliminar el producto");
+          }
+        } catch (error) {
+          console.error("Error al eliminar el producto:", error);
+          alert(
+            "Error al eliminar el producto: " +
+              (error.response?.data || error.message)
+          );
+        }
+      }
     },
   },
-
   created: function () {
-    this.getAllPokemones();
+    this.getAllProductos();
   },
 };
 </script>
@@ -233,5 +299,48 @@ h1 {
 .action-button svg {
   width: 18px;
   height: 18px;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
 }
 </style>

@@ -23,14 +23,29 @@
         <!-- Los días se generarán con JavaScript -->
       </div>
     </div>
-  </div>
-  <div class="selected-date" id="selected-date-display">
-    Fecha seleccionada: viernes, 16 de junio de 2023
+
+    <div class="selected-date" id="selected-date-display">
+      Fecha seleccionada:
+    </div>
+
+    <!-- Nuevo contenedor para mostrar los productos -->
+    <div class="products-container" v-if="selectedDateProducts.length > 0">
+      <h2>Productos vendidos en esta fecha:</h2>
+      <div class="product-card" v-for="product in selectedDateProducts" :key="product.id">
+        <img :src="product.imagen" :alt="product.nombre" class="product-image">
+        <div class="product-details">
+          <h3>{{ product.nombre }}</h3>
+          <p>Cantidad vendida: {{ product.cantidad }}</p>
+        </div>
+      </div>
+    </div>
+    <div v-else class="no-products">
+      No hay ventas registradas en esta fecha
+    </div>
   </div>
 </template>
 
-<script>
-export default {};
+<script setup>
 document.addEventListener("DOMContentLoaded", function () {
   // Nombres de los meses en español
   const monthNames = [
@@ -59,10 +74,13 @@ document.addEventListener("DOMContentLoaded", function () {
     "sábado",
   ];
 
-  // Establecer la fecha inicial (16 de junio de 2023)
-  let currentMonth = 5; // Junio (0-indexado)
-  let currentYear = 2023;
-  let selectedDay = 16; // Día inicialmente seleccionado
+  // Obtener la fecha actual del sistema
+  const today = new Date();
+
+  // Establecer la fecha inicial con la fecha actual del computador
+  let currentMonth = today.getMonth(); // Mes actual (0-indexado)
+  let currentYear = today.getFullYear(); // Año actual
+  let selectedDay = today.getDate(); // Día actual
   let selectedMonth = currentMonth;
   let selectedYear = currentYear;
 
@@ -115,7 +133,16 @@ document.addEventListener("DOMContentLoaded", function () {
         year === selectedYear
       ) {
         dayElement.classList.add("selected");
-        console.log("Día seleccionado marcado:", i);
+      }
+
+      // Marcar el día actual con un color especial si es el mes y año actuales
+      if (
+        i === today.getDate() &&
+        month === today.getMonth() &&
+        year === today.getFullYear()
+      ) {
+        dayElement.style.border = "2px solid #28a745";
+        dayElement.style.fontWeight = "bold";
       }
 
       // Aquí se agrega el data attribute para identificar el día
@@ -140,13 +167,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Actualizar la fecha seleccionada
         updateSelectedDateDisplay();
-
-        console.log("Día seleccionado:", i, "Mes:", month + 1, "Año:", year);
-        console.log("Elemento:", this);
-        console.log(
-          "Tiene clase selected:",
-          this.classList.contains("selected")
-        );
       });
 
       allDayElements.push(dayElement);
@@ -203,150 +223,192 @@ document.addEventListener("DOMContentLoaded", function () {
     generateCalendar(currentMonth, currentYear);
   });
 
-  // Inicializar el calendario
+  // Inicializar el calendario con la fecha actual
   generateCalendar(currentMonth, currentYear);
 
-  // Marcar inicialmente el día 16 como seleccionado
-  console.log("Estado inicial:");
-  console.log("Día seleccionado:", selectedDay);
-  console.log("Mes seleccionado:", selectedMonth + 1);
-  console.log("Año seleccionado:", selectedYear);
-
-  // Para probar y verificar si hay conflictos de estilo
-  window.testSelection = function () {
-    const selectedElement = document.querySelector(".day.selected");
-    if (selectedElement) {
-      console.log("Elemento seleccionado:", selectedElement);
-      console.log(
-        "Estilos computados:",
-        window.getComputedStyle(selectedElement)
-      );
-    } else {
-      console.log("No se encontró ningún día seleccionado");
-    }
-  };
+  console.log("Fecha actual del sistema:");
+  console.log("Día:", selectedDay);
+  console.log("Mes:", monthNames[selectedMonth]);
+  console.log("Año:", selectedYear);
 });
 </script>
 
+<script>
+export default {
+  data() {
+    return {
+      selectedDateProducts: [],
+      // ... resto de las propiedades existentes
+    }
+  },
+  methods: {
+    async fetchProductsByDate(date) {
+      try {
+        const response = await this.axios.get(`http://localhost:3000/ventas/${date}`);
+        this.selectedDateProducts = response.data;
+      } catch (error) {
+        console.error('Error al obtener los productos:', error);
+        this.selectedDateProducts = [];
+      }
+    },
+
+    // Modificar la función que maneja el clic en un día
+    handleDayClick(day, month, year) {
+      // ... código existente de selección de fecha ...
+      
+      // Formatear la fecha para la API (YYYY-MM-DD)
+      const formattedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      this.fetchProductsByDate(formattedDate);
+    }
+  }
+}
+</script>
+
 <style scoped>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
   font-family: Arial, sans-serif;
 }
 
-body {
-  background-color: #f0f0f0;
-  padding: 20px;
-}
-
-.container {
-  max-width: 600px;
-  margin: 0 auto;
-
-  position: relative;
-  right: 39rem;
-  top: 10rem;
-  display: flex;
-
-}
-
 h1 {
+  text-align: center;
   color: #333;
-  margin-bottom: 20px;
-  font-size: 24px;
-  font-weight: normal;
-  padding: 20px;
-  position: absolute;
-  bottom: 14rem;
+  margin-bottom: 30px;
 }
 
 .calendar-container {
-  background-color: white;
-  border-radius: 8px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+  margin-bottom: 20px;
 }
 
 .calendar-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
-}
-
-.month-selector {
-  font-weight: bold;
-  font-size: 18px;
-  text-align: center;
-  flex-grow: 1;
+  margin-bottom: 20px;
 }
 
 .nav-btn {
-  background: none;
+  background: #007bff;
+  color: white;
   border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
   cursor: pointer;
+  font-size: 16px;
+}
+
+.nav-btn:hover {
+  background: #0056b3;
+}
+
+.month-selector {
   font-size: 18px;
+  font-weight: bold;
   color: #333;
-  padding: 5px 10px;
 }
 
 .weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  text-align: center;
+  gap: 5px;
   margin-bottom: 10px;
 }
 
 .weekday {
-  font-size: 14px;
+  text-align: center;
+  font-weight: bold;
   color: #666;
-  padding: 8px 0;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 5px;
 }
 
 .days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  text-align: center;
+  gap: 5px;
 }
 
 .day {
-  padding: 8px 0;
+  text-align: center;
+  padding: 15px 10px;
+  border-radius: 5px;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 16px;
-  position: relative;
-  height: 40px;
-  width: 40px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: #f8f9fa;
 }
 
-/* Día seleccionado - estilo muy específico para evitar conflictos */
+.day:hover {
+  background: #e9ecef;
+}
+
 .day.selected {
-  background-color: #007bff !important;
+  background: #007bff !important;
   color: white !important;
-  border-radius: 50% !important;
+  font-weight: bold;
 }
 
-.other-month {
+.day.other-month {
   color: #ccc;
+  background: #f8f9fa;
 }
 
 .selected-date {
-  margin-top: 20px;
   text-align: center;
   font-size: 16px;
+  font-weight: bold;
   color: #333;
-  position: relative;
-  right: 27rem;
+  background: #e7f3ff;
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid #007bff;
 }
 
-/* Debugging - para ver los bordes de cada celda */
-.debug .day {
-  border: 1px dashed #ddd;
+.products-container {
+  margin-top: 20px;
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.product-card {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 10px;
+}
+
+.product-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 5px;
+  margin-right: 20px;
+}
+
+.product-details {
+  flex-grow: 1;
+}
+
+.product-details h3 {
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.no-products {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  background: #f8f9fa;
+  border-radius: 10px;
+  margin-top: 20px;
 }
 </style>
